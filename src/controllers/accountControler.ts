@@ -4,7 +4,7 @@ import Account from '@models/accountModel'
 
 class AccountController {
   public async getAccount (req: Request, res: Response): Promise<Response> {
-    const accounts = await Account.find()
+    const accounts = await Account.findById(req.params.id)
 
     return res.json(accounts)
   }
