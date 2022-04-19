@@ -2,9 +2,9 @@ import { Router } from 'express'
 
 import AccountController from '@controllers/accountControler'
 
-const router = Router()
+const accountRouter = Router()
 
-router.route('/:id').get(AccountController.getAccount)
-router.route('/').post(AccountController.createAccount)
+accountRouter.route('/:id').get(AccountController.getAccount)
+accountRouter.route('/').post(AccountController.createAccount)
 
-export default router
+export default accountRouter

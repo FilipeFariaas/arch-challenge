@@ -2,9 +2,9 @@ import { Router } from 'express'
 
 import TransactionController from '@controllers/transactionController'
 
-const router = Router()
+const transactionRouter = Router()
 
-router.route('/').get(TransactionController.getAllAccountTransactions)
-router.route('/:id').post(TransactionController.createTransaction)
+transactionRouter.route('/').get(TransactionController.getAllAccountTransactions)
+transactionRouter.route('/:id').post(TransactionController.createTransaction)
 
-export default router
+export default transactionRouter
