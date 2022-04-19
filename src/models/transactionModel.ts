@@ -5,10 +5,10 @@ interface TransactionInterface extends Document {
   transactionValue: number,
   transactionDate: Date,
   transactionType: string
-  // account: {
-  //   type: mongoose.Schema.Types.ObjectId,
-  //   ref: 'Account'
-  // }
+  account: {
+    type: mongoose.Schema.Types.ObjectId,
+    ref: 'Account'
+  }
 }
 
 const TransactionSchema = new Schema({
@@ -31,7 +31,7 @@ const TransactionSchema = new Schema({
 TransactionSchema.pre(/^find/, function (this: any, next) {
   this.populate({
     path: 'account',
-    select: 'holder'
+    select: ['holder', 'balance']
   })
 
   next()
