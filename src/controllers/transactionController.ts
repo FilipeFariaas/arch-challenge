@@ -9,7 +9,7 @@ class TransactionController {
     return res.json(transactions)
   }
 
-  public async createTransaction (req: Request, res: Response): Promise<Response> {
+  public async createTransaction (req: Request, res: Response, next: NextFunction): Promise<Response> {
     const transaction = await Transaction.create(req.body)
 
     return res.json(transaction)

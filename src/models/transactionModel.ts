@@ -1,3 +1,4 @@
+// import { NextFunction } from 'express'
 import mongoose, { Schema, model, Document } from 'mongoose'
 
 interface TransactionInterface extends Document {
@@ -12,7 +13,10 @@ interface TransactionInterface extends Document {
 
 const TransactionSchema = new Schema({
   transactionValue: Number,
-  transactionDate: Date,
+  transactionDate: {
+    type: Date,
+    default: new Date().toLocaleDateString()
+  },
   transactionType: String,
   account: {
     type: mongoose.Schema.Types.ObjectId,
@@ -22,6 +26,15 @@ const TransactionSchema = new Schema({
   timestamps: true,
   toJSON: { virtuals: true },
   toObject: { virtuals: true }
+})
+
+TransactionSchema.pre(/^find/, function (this: any, next) {
+  this.populate({
+    path: 'account',
+    select: 'holder'
+  })
+
+  next()
 })
 
 export default model<TransactionInterface>('Transaction', TransactionSchema)
