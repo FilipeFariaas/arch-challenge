@@ -1,6 +1,9 @@
 import express from 'express'
 import mongoose from 'mongoose'
 
+import accountRouter from './routes/accountRouter'
+import transactionRouter from './routes/transactionRouter'
+
 class App {
   public express: express.Application
 
@@ -20,9 +23,11 @@ class App {
   }
 
   private routes (): void {
-    this.express.get('/', (req, res) => {
-      res.send('Hello, World!')
-    })
+    // this.express.get('/', (req, res) => {
+    //   res.send('Hello, World!')
+    // })
+    this.express.use('/accounts', accountRouter)
+    this.express.use('/transactions', transactionRouter)
   }
 }
 
