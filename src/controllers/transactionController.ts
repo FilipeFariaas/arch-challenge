@@ -1,9 +1,9 @@
-import { Request, Response } from 'express'
+import { NextFunction, Request, Response } from 'express'
 
 import Transaction from '@models/transactionModel'
 
 class TransactionController {
-  public async getAllAccountTransactions (req: Request, res: Response): Promise<Response> {
+  public async getAllAccountTransactions (req: Request, res: Response, next: NextFunction): Promise<Response> {
     const transactions = await Transaction.find()
 
     return res.json(transactions)
