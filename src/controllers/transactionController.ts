@@ -7,12 +7,13 @@ import { redisClient, setRedis } from 'src/redisConfig'
 class TransactionController {
   public async getAllAccountTransactions (req: Request, res: Response): Promise<Response> {
     try {
-      const transactions = await Transaction.find()
+      const transactions = await Transaction.findById(req.params.id)
+      const accountTransactions = await Account.findById(req.params.id)
 
       return res.status(200).json({
         status: 'success',
         data: {
-          transactions
+          accountTransactions
         }
       })
     } catch (error) {
@@ -37,6 +38,10 @@ class TransactionController {
 
       await Account.findByIdAndUpdate(account.valueOf(), {
         balance: balance + transactionValue
+      })
+
+      await Account.findByIdAndUpdate(account.valueOf(), {
+        $push: { transactions: transaction }
       })
 
       const newBalance = await Account.findById(account.valueOf(), { balance: true, _id: false })
