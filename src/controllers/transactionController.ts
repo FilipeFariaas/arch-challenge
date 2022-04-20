@@ -2,7 +2,7 @@ import { Request, Response } from 'express'
 
 import Transaction from '@models/transactionModel'
 import Account from '@models/accountModel'
-import { setRedis } from 'src/redisConfig'
+import { redisClient, setRedis } from 'src/redisConfig'
 
 class TransactionController {
   public async getAllAccountTransactions (req: Request, res: Response): Promise<Response> {
@@ -22,12 +22,14 @@ class TransactionController {
       transactionValue = -Math.abs(transactionValue)
     }
 
-    await Account.findByIdAndUpdate('625e09d9dea82d194642247e', {
+    await Account.findByIdAndUpdate(account.valueOf(), {
       balance: balance + transactionValue
     })
 
     const newBalance = await Account.findById(account.valueOf(), { balance: true, _id: false })
     const newBalanceValue = JSON.stringify(JSON.parse(JSON.stringify(newBalance)).balance)
+
+    redisClient.flushall('ASYNC', () => console.log('Cache cleared'))
 
     await setRedis(`account-${account.valueOf()}`, newBalanceValue)
 

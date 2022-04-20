@@ -12,7 +12,7 @@ function getRedis (value: string) {
 
 function setRedis (key: string, value: string) {
   const syncRedisSet = promisify(redisClient.set).bind(redisClient)
-  return syncRedisSet(key, value)
+  return syncRedisSet(key, value, 'EX', 300) // Cache expires in 5 minutes
 
   // redisClient.set("", "")
 }
