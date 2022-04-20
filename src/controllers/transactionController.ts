@@ -6,34 +6,58 @@ import { redisClient, setRedis } from 'src/redisConfig'
 
 class TransactionController {
   public async getAllAccountTransactions (req: Request, res: Response): Promise<Response> {
-    const transactions = await Transaction.find()
+    try {
+      const transactions = await Transaction.find()
 
-    return res.json(transactions)
+      return res.status(200).json({
+        status: 'success',
+        data: {
+          transactions
+        }
+      })
+    } catch (error) {
+      return res.status(404).json({
+        status: 'fail',
+        message: error
+      })
+    }
   }
 
   public async createTransaction (req: Request, res: Response): Promise<Response> {
-    const transaction = await Transaction.create(req.body)
+    try {
+      const transaction = await Transaction.create(req.body)
 
-    let { transactionValue, transactionType, account } = transaction
+      let { transactionValue, transactionType, account } = transaction
 
-    const { balance } = await Account.findById(account.valueOf())
+      const { balance } = await Account.findById(account.valueOf())
 
-    if (transactionType === 'debito') {
-      transactionValue = -Math.abs(transactionValue)
+      if (transactionType === 'debito') {
+        transactionValue = -Math.abs(transactionValue)
+      }
+
+      await Account.findByIdAndUpdate(account.valueOf(), {
+        balance: balance + transactionValue
+      })
+
+      const newBalance = await Account.findById(account.valueOf(), { balance: true, _id: false })
+      const newBalanceValue = JSON.stringify(JSON.parse(JSON.stringify(newBalance)).balance)
+
+      redisClient.flushall('ASYNC', () => console.log('Cache cleared'))
+
+      await setRedis(`account-${account.valueOf()}`, newBalanceValue)
+
+      return res.status(200).json({
+        status: 'success',
+        data: {
+          transaction
+        }
+      })
+    } catch (error) {
+      return res.status(404).json({
+        status: 'fail',
+        message: error
+      })
     }
-
-    await Account.findByIdAndUpdate(account.valueOf(), {
-      balance: balance + transactionValue
-    })
-
-    const newBalance = await Account.findById(account.valueOf(), { balance: true, _id: false })
-    const newBalanceValue = JSON.stringify(JSON.parse(JSON.stringify(newBalance)).balance)
-
-    redisClient.flushall('ASYNC', () => console.log('Cache cleared'))
-
-    await setRedis(`account-${account.valueOf()}`, newBalanceValue)
-
-    return res.json(transaction)
   }
 }
 

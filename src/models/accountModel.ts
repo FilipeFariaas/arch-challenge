@@ -9,11 +9,11 @@ interface AccountInterface {
 const AccountSchema = new Schema({
   accountType: String,
   holder: String,
-  // balance: {
-  //   type: Number,
-  //   default: 0
-  // }
-  balance: Number
+  balance: {
+    type: Number,
+    default: 0
+  }
+  // balance: Number
 })
 
 export default model<AccountInterface>('Account', AccountSchema)
