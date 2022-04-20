@@ -13,7 +13,6 @@ const AccountSchema = new Schema({
     type: Number,
     default: 0
   }
-  // balance: Number
 })
 
 export default model<AccountInterface>('Account', AccountSchema)
